@@ -32,9 +32,9 @@ public class ListProperti extends javax.swing.JFrame {
             ResultSet r = s.executeQuery(sql);
             
             while (r.next()) {                
-                Object[] o = new Object[4];
-                o [0] = r.getString("ID_Properti");
-                o [1] = r.getString("Nama_Properti");
+                Object[] o = new Object[7];
+                o [0] = r.getString("id");
+                o [1] = r.getString("nama");
                 o [2] = r.getString("Alamat");
                 o [3] = r.getString("Fasilitas");
                 o [4] = r.getString("Harga");
@@ -46,7 +46,7 @@ public class ListProperti extends javax.swing.JFrame {
             r.close();
             s.close();
         } catch (Exception e) {
-            System.out.println("terjadi kesalahan");
+            System.out.println("Terjadi kesalahan: " + e.getMessage());
         }
     }
     
@@ -63,8 +63,8 @@ public class ListProperti extends javax.swing.JFrame {
         
         try {
             Connection c = Koneksi.getConnect();
-            String sql = "Select * from properti where ID_Properti like '%" + txCari.getText() + "%'" +
-                    "or Nama_Properti like '%" + txCari.getText() + "%'";
+            String sql = "Select * from properti where id like '%" + txCari.getText() + "%'" +
+                    "or nama like '%" + txCari.getText() + "%'";
             Statement stat = c.createStatement();
             ResultSet rs = stat.executeQuery(sql);
             while (rs.next()) {                
@@ -97,8 +97,8 @@ public class ListProperti extends javax.swing.JFrame {
         
         jTable1.setModel(model);
         
-        model.addColumn("ID_Properti");
-        model.addColumn("Nama_Properti");
+        model.addColumn("id");
+        model.addColumn("nama");
         model.addColumn("Alamat");
         model.addColumn("Fasilitas");
         model.addColumn("Harga");

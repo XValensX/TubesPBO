@@ -39,11 +39,11 @@ public class Penyewaan extends javax.swing.JFrame {
         try {
             Connection c = Koneksi.getConnect();
             Statement s = c.createStatement();
-            String sql = "SELECT * FROM penjualan ORDER BY NoFaktur DESC";
+            String sql = "SELECT * FROM penjualan ORDER BY noTransaksi DESC";
             ResultSet r = s.executeQuery(sql);
             if (r.next()) {
-                String NoFaktur = r.getString("NoFaktur").substring(2);
-                String TR = "" +(Integer.parseInt(NoFaktur)+1);
+                String noTransaksi = r.getString("noTransaksi").substring(2);
+                String TR = "" +(Integer.parseInt(noTransaksi)+1);
                 String Nol = "";
                 
                 if(TR.length()==1)
@@ -61,7 +61,8 @@ public class Penyewaan extends javax.swing.JFrame {
             r.close();
             s.close();
         } catch (Exception e) {
-            System.out.println("autonumber error");
+            System.out.println("autonumber error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
@@ -502,23 +503,6 @@ public class Penyewaan extends javax.swing.JFrame {
             p.close();
         } catch (Exception e) {
             System.out.println("simpan penjualan error");
-        }
-        
-        try {
-            Connection c = Koneksi.getConnect();
-            int baris = jTable1.getRowCount();
-            
-            for (int i = 0; i < baris; i++) {
-                String sql = "INSERT INTO penjualanrinci(NoFaktur, ID_Barang, Nama_Barang, Jumlah, Harga, Total) VALUES('"
-                        + jTable1.getValueAt(i, 0) +"','"+ jTable1.getValueAt(i, 1) +"','"+ jTable1.getValueAt(i, 2) 
-                        +"','"+ jTable1.getValueAt(i, 3) +"','"+ jTable1.getValueAt(i, 4) +"','"+ jTable1.getValueAt(i, 5) 
-                        +"')";
-                PreparedStatement p = c.prepareStatement(sql);
-                p.executeUpdate();
-                p.close();
-            }
-        } catch (Exception e) {
-            System.out.println("simpan penjualanrinci error");
         }
         clear();
         utama();

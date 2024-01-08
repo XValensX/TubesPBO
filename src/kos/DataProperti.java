@@ -22,34 +22,34 @@ public class DataProperti extends javax.swing.JFrame {
     
     private DefaultTableModel model;
 
-    private void autonumber(){
+    private void autonumber() {
         try {
             Connection c = Koneksi.getConnect();
             Statement s = c.createStatement();
-            String sql = "SELECT * FROM properti ORDER BY ID_Properti DESC";
+
+            String sql = "SELECT * FROM properti ORDER BY id DESC LIMIT 1";
             ResultSet r = s.executeQuery(sql);
+
             if (r.next()) {
-                String NoFaktur = r.getString("ID_Barang").substring(2);
-                String BR = "" +(Integer.parseInt(NoFaktur)+1);
-                String Nol = "";
-                
-                if (BR.length()==1) 
-                    {Nol = "00";}
-                else if(BR.length()==2)
-                    {Nol = "0";}
-                else if(BR.length()==3)
-                    {Nol = "";}
-                
-                txIDProperti.setText("BR" + Nol + BR);  
-            }else{
+                String lastId = r.getString("id");
+                int number = Integer.parseInt(lastId.substring(2)) + 1;
+
+                String formattedNumber = String.format("%03d", number);
+
+                txIDProperti.setText("BR" + formattedNumber);
+            } else {
                 txIDProperti.setText("BR001");
             }
+
             r.close();
             s.close();
         } catch (Exception e) {
-            System.out.println("autonumber error");
+            e.printStackTrace(); // Print the exception details for debugging
+            System.out.println("autonumber error: " + e.getMessage());
         }
     }
+
+
     
     public void clear(){
         txNamaProperti.setText("");
@@ -70,9 +70,9 @@ public class DataProperti extends javax.swing.JFrame {
             ResultSet r = s.executeQuery(sql);
             
             while (r.next()) {
-                Object[] o = new Object[4];
-                o [0] = r.getString("ID_Properti");
-                o [1] = r.getString("Nama_Properti");
+                Object[] o = new Object[7];
+                o [0] = r.getString("id");
+                o [1] = r.getString("nama");
                 o [2] = r.getString("Alamat");
                 o [3] = r.getString("Fasilitas");
                 o [4] = r.getString("Harga");
@@ -84,7 +84,8 @@ public class DataProperti extends javax.swing.JFrame {
             r.close();
             s.close();
         } catch (Exception e) {
-            System.out.println("terjadi kesalahan");
+            e.printStackTrace();
+            System.out.println("terjadi kesalahan: " + e.getMessage());
         }
     }
     
@@ -102,8 +103,8 @@ public class DataProperti extends javax.swing.JFrame {
         
         try {
             Connection c = Koneksi.getConnect();
-            String sql = "Select * from properti where ID_Properti like '%" + jTextField1.getText() + "%'" +
-                    "or Nama_Properti like '%" + jTextField1.getText() + "%'";
+            String sql = "Select * from properti where id like '%" + jTextField1.getText() + "%'" +
+                    "or nama like '%" + jTextField1.getText() + "%'";
             Statement stat = c.createStatement();
             ResultSet rs = stat.executeQuery(sql);
             while (rs.next()) {                
@@ -137,8 +138,8 @@ public class DataProperti extends javax.swing.JFrame {
         
         jTable1.setModel(model);
         
-        model.addColumn("ID_Properti");
-        model.addColumn("Nama_Properti");
+        model.addColumn("id");
+        model.addColumn("nama");
         model.addColumn("Alamat");
         model.addColumn("Fasilitas");
         model.addColumn("Harga");
@@ -434,7 +435,7 @@ public class DataProperti extends javax.swing.JFrame {
         
         try {
             Connection c = Koneksi.getConnect();
-            String sql = "UPDATE barang SET Nama_Properti = ?,  Harga = ?, Deskripsi = ? WHERE ID_Properti = ?";
+            String sql = "UPDATE properti SET nama = ?,  Harga = ?, Deskripsi = ? WHERE id = ?";
             PreparedStatement p = c.prepareStatement(sql);
             p.setString(1, nama);
             p.setString(2, harga);
@@ -473,14 +474,15 @@ public class DataProperti extends javax.swing.JFrame {
         if (pernyataan== JOptionPane.OK_OPTION) {
             try {
                 Connection c = Koneksi.getConnect();
-                String sql = "DELETE FROM properti WHERE ID_Properti = ?";
+                String sql = "DELETE FROM properti WHERE id = ?";
                 PreparedStatement p = c.prepareStatement(sql);
                 p.setString(1, id);
                 p.executeUpdate();
                 p.close();
                 JOptionPane.showMessageDialog(null, "Data Terhapus");
             } catch (Exception e) {
-                System.out.println("Terjadi Kesalahan");
+                e.printStackTrace();
+                System.out.println("terjadi kesalahan: " + e.getMessage());
             }finally{
                 btnSimpan.setEnabled(true);
                 btnEdit.setEnabled(false);
@@ -522,7 +524,8 @@ public class DataProperti extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data Tersimpan");
             loadData();
         } catch (Exception e) {
-            System.out.println("Terjadi Kesalahan");
+            e.printStackTrace();
+            System.out.println("terjadi kesalahan: " + e.getMessage());
         }finally{
             autonumber();
             clear();
